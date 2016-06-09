@@ -15,6 +15,9 @@ function UserDAO(db) {
     var usersCol = db.collection("users");
 
     this.addUser = function(userName, firstName, lastName, password, email, callback) {
+        // Generate password hash
+        var salt = bcrypt.genSaltSync();
+        var passwordHash = bcrypt.hashSync(password, salt);
 
         // Create user document
         var user = {
@@ -22,12 +25,8 @@ function UserDAO(db) {
             firstName: firstName,
             lastName: lastName,
             benefitStartDate: this.getRandomFutureDate(),
-            password: password //received from request param
-                /*
-                // Fix for A2-1 - Broken Auth
-                // Stores password  in a safer way using one way encryption and salt hashing
-                password: bcrypt.hashSync(password, bcrypt.genSaltSync())
-                */
+            password: passwordHash //received from request param
+               
         };
 
         // Add email if set

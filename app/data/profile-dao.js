@@ -12,25 +12,33 @@ function ProfileDAO(db) {
 
     var users = db.collection("users");
 
-    /* Fix for A6 - Sensitive Data Exposure
-
-    // Use crypto module to save sensitive data such as ssn, dob in encrypted format
+    // Include crypto module
     var crypto = require("crypto");
-    var config = require("../../config/config");
 
-    // Helper function to encrypt data
+    // Sets keys config object
+    var config = {
+        cryptoKey: "a_secure_key_for_crypto_here",
+        cryptoAlgo: "aes256"
+    };
+
+    // Helper methods to encrypt / decrypt
     var encrypt = function(toEncrypt) {
         var cipher = crypto.createCipher(config.cryptoAlgo, config.cryptoKey);
         return cipher.update(toEncrypt, "utf8", "hex") + cipher.final("hex");
     };
 
-    // Helper function to decrypt data
     var decrypt = function(toDecrypt) {
         var decipher = crypto.createDecipher(config.cryptoAlgo, config.cryptoKey);
         return decipher.update(toDecrypt, "hex", "utf8") + decipher.final("utf8");
     };
 
-    */
+    // Encrypt values before saving in database
+    user.ssn = encrypt(ssn);
+    user.dob = encrypt(dob);
+
+    // Decrypt values to show on view
+    user.ssn = decrypt(user.ssn);
+    user.dob = decrypt(user.dob);
 
     this.updateUser = function(userId, firstName, lastName, ssn, dob, address, bankAcc, bankRouting, callback) {
 
